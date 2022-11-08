@@ -85,7 +85,7 @@ func New(jobInformer batchinformers.JobInformer, client clientset.Interface) *Co
 	tc := &Controller{
 		client:   client,
 		recorder: eventBroadcaster.NewRecorder(scheme.Scheme, v1.EventSource{Component: "ttl-after-finished-controller"}),
-		queue:    workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "ttl_jobs_to_delete"),
+		queue:    workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "ttl_jobs_to_delete"),
 	}
 
 	jobInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{

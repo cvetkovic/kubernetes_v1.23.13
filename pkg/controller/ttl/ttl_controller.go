@@ -29,6 +29,7 @@ package ttl
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"math"
 	"strconv"
 	"sync"
@@ -81,7 +82,7 @@ type Controller struct {
 func NewTTLController(nodeInformer informers.NodeInformer, kubeClient clientset.Interface) *Controller {
 	ttlc := &Controller{
 		kubeClient: kubeClient,
-		queue:      workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "ttlcontroller"),
+		queue:      workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "ttlcontroller"),
 	}
 
 	nodeInformer.Informer().AddEventHandler(cache.ResourceEventHandlerFuncs{

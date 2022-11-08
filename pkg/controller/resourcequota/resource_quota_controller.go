@@ -19,6 +19,7 @@ package resourcequota
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"reflect"
 	"sync"
 	"time"
@@ -108,8 +109,8 @@ func NewController(options *ControllerOptions) (*Controller, error) {
 		rqClient:            options.QuotaClient,
 		rqLister:            options.ResourceQuotaInformer.Lister(),
 		informerSyncedFuncs: []cache.InformerSynced{options.ResourceQuotaInformer.Informer().HasSynced},
-		queue:               workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "resourcequota_primary"),
-		missingUsageQueue:   workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "resourcequota_priority"),
+		queue:               workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "resourcequota_primary"),
+		missingUsageQueue:   workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "resourcequota_priority"),
 		resyncPeriod:        options.ResyncPeriod,
 		registry:            options.Registry,
 	}
@@ -148,7 +149,7 @@ func NewController(options *ControllerOptions) (*Controller, error) {
 			informersStarted:  options.InformersStarted,
 			informerFactory:   options.InformerFactory,
 			ignoredResources:  options.IgnoredResourcesFunc(),
-			resourceChanges:   workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "resource_quota_controller_resource_changes"),
+			resourceChanges:   workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "resource_quota_controller_resource_changes"),
 			resyncPeriod:      options.ReplenishmentResyncPeriod,
 			replenishmentFunc: rq.replenishQuota,
 			registry:          rq.registry,

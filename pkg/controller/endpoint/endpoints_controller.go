@@ -19,6 +19,7 @@ package endpoint
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"math"
 	"strconv"
 	"time"
@@ -97,7 +98,7 @@ func NewEndpointController(podInformer coreinformers.PodInformer, serviceInforme
 	}
 	e := &Controller{
 		client:           client,
-		queue:            workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "endpoint"),
+		queue:            workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "endpoint"),
 		workerLoopPeriod: time.Second,
 	}
 

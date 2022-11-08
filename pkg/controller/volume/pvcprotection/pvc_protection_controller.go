@@ -19,6 +19,7 @@ package pvcprotection
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -59,7 +60,7 @@ type Controller struct {
 func NewPVCProtectionController(pvcInformer coreinformers.PersistentVolumeClaimInformer, podInformer coreinformers.PodInformer, cl clientset.Interface) (*Controller, error) {
 	e := &Controller{
 		client: cl,
-		queue:  workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "pvcprotection"),
+		queue:  workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "pvcprotection"),
 	}
 	if cl != nil && cl.CoreV1().RESTClient().GetRateLimiter() != nil {
 		ratelimiter.RegisterMetricAndTrackRateLimiterUsage("persistentvolumeclaim_protection_controller", cl.CoreV1().RESTClient().GetRateLimiter())

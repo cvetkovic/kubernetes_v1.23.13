@@ -19,6 +19,7 @@ package pvprotection
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"time"
 
 	v1 "k8s.io/api/core/v1"
@@ -53,7 +54,7 @@ type Controller struct {
 func NewPVProtectionController(pvInformer coreinformers.PersistentVolumeInformer, cl clientset.Interface) *Controller {
 	e := &Controller{
 		client: cl,
-		queue:  workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "pvprotection"),
+		queue:  workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "pvprotection"),
 	}
 	if cl != nil && cl.CoreV1().RESTClient().GetRateLimiter() != nil {
 		ratelimiter.RegisterMetricAndTrackRateLimiterUsage("persistentvolume_protection_controller", cl.CoreV1().RESTClient().GetRateLimiter())

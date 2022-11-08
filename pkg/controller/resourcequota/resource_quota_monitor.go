@@ -109,7 +109,7 @@ func NewMonitor(informersStarted <-chan struct{}, informerFactory informerfactor
 		informersStarted:  informersStarted,
 		informerFactory:   informerFactory,
 		ignoredResources:  ignoredResources,
-		resourceChanges:   workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "resource_quota_controller_resource_changes"),
+		resourceChanges:   workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "resource_quota_controller_resource_changes"),
 		resyncPeriod:      resyncPeriod,
 		replenishmentFunc: replenishmentFunc,
 		registry:          registry,

@@ -20,6 +20,7 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"time"
 
 	"k8s.io/api/core/v1"
@@ -82,8 +83,8 @@ func NewTokensController(serviceAccounts informers.ServiceAccountInformer, secre
 		token:  options.TokenGenerator,
 		rootCA: options.RootCA,
 
-		syncServiceAccountQueue: workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "serviceaccount_tokens_service"),
-		syncSecretQueue:         workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "serviceaccount_tokens_secret"),
+		syncServiceAccountQueue: workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "serviceaccount_tokens_service"),
+		syncSecretQueue:         workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "serviceaccount_tokens_secret"),
 
 		maxRetries: maxRetries,
 	}

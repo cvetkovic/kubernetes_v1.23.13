@@ -89,7 +89,7 @@ func NewControllerV2(jobInformer batchv1informers.JobInformer, cronJobsInformer 
 	}
 
 	jm := &ControllerV2{
-		queue:    workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "cronjob"),
+		queue:    workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "cronjob"),
 		recorder: eventBroadcaster.NewRecorder(scheme.Scheme, corev1.EventSource{Component: "cronjob-controller"}),
 
 		jobControl:     realJobControl{KubeClient: kubeClient},

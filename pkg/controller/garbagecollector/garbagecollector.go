@@ -20,6 +20,7 @@ import (
 	"context"
 	goerrors "errors"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"reflect"
 	"sync"
 	"time"
@@ -97,8 +98,8 @@ func NewGarbageCollector(
 	eventBroadcaster.StartRecordingToSink(&v1core.EventSinkImpl{Interface: kubeClient.CoreV1().Events("")})
 	eventRecorder := eventBroadcaster.NewRecorder(scheme.Scheme, v1.EventSource{Component: "garbage-collector-controller"})
 
-	attemptToDelete := workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "garbage_collector_attempt_to_delete")
-	attemptToOrphan := workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "garbage_collector_attempt_to_orphan")
+	attemptToDelete := workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "garbage_collector_attempt_to_delete")
+	attemptToOrphan := workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "garbage_collector_attempt_to_orphan")
 	absentOwnerCache := NewReferenceCache(500)
 	gc := &GarbageCollector{
 		metadataClient:   metadataClient,
@@ -112,7 +113,7 @@ func NewGarbageCollector(
 		metadataClient:   metadataClient,
 		informersStarted: informersStarted,
 		restMapper:       mapper,
-		graphChanges:     workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "garbage_collector_graph_changes"),
+		graphChanges:     workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "garbage_collector_graph_changes"),
 		uidToNode: &concurrentUIDToNode{
 			uidToNode: make(map[types.UID]*node),
 		},

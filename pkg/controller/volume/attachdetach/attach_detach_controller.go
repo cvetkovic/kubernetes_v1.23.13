@@ -20,6 +20,7 @@ package attachdetach
 
 import (
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"net"
 	"time"
 
@@ -134,7 +135,7 @@ func NewAttachDetachController(
 		nodeLister:          nodeInformer.Lister(),
 		nodesSynced:         nodeInformer.Informer().HasSynced,
 		cloud:               cloud,
-		pvcQueue:            workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "pvcs"),
+		pvcQueue:            workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "pvcs"),
 		filteredDialOptions: filteredDialOptions,
 	}
 

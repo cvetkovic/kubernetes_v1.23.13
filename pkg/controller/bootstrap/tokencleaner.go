@@ -79,7 +79,7 @@ func NewTokenCleaner(cl clientset.Interface, secrets coreinformers.SecretInforme
 		secretLister:         secrets.Lister(),
 		secretSynced:         secrets.Informer().HasSynced,
 		tokenSecretNamespace: options.TokenSecretNamespace,
-		queue:                workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "token_cleaner"),
+		queue:                workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "token_cleaner"),
 	}
 
 	if cl.CoreV1().RESTClient().GetRateLimiter() != nil {

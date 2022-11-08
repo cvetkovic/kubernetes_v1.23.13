@@ -19,6 +19,7 @@ package disruption
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"strings"
 	"time"
 
@@ -130,7 +131,7 @@ func NewDisruptionController(
 ) *DisruptionController {
 	dc := &DisruptionController{
 		kubeClient:   kubeClient,
-		queue:        workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "disruption"),
+		queue:        workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "disruption"),
 		recheckQueue: workqueue.NewNamedDelayingQueue("disruption_recheck"),
 		broadcaster:  record.NewBroadcaster(),
 	}

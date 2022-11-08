@@ -18,6 +18,7 @@ package bootstrap
 
 import (
 	"context"
+	"k8s.io/kubernetes/pkg"
 	"strings"
 	"time"
 
@@ -104,7 +105,7 @@ func NewSigner(cl clientset.Interface, secrets informers.SecretInformer, configM
 		secretSynced:       secrets.Informer().HasSynced,
 		configMapLister:    configMaps.Lister(),
 		configMapSynced:    configMaps.Informer().HasSynced,
-		syncQueue:          workqueue.NewNamedRateLimitingQueue(workqueue.DefaultControllerRateLimiter(), "bootstrap_signer_queue"),
+		syncQueue:          workqueue.NewNamedRateLimitingQueue(pkg.CustomRateLimiter(), "bootstrap_signer_queue"),
 	}
 	if cl.CoreV1().RESTClient().GetRateLimiter() != nil {
 		if err := ratelimiter.RegisterMetricAndTrackRateLimiterUsage("bootstrap_signer", cl.CoreV1().RESTClient().GetRateLimiter()); err != nil {
