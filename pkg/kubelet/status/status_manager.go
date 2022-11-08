@@ -263,7 +263,7 @@ func (m *manager) SetContainerReadiness(podUID types.UID, containerID kubecontai
 	}
 	updateConditionFunc(v1.PodReady, GeneratePodReadyCondition(&pod.Spec, status.Conditions, status.ContainerStatuses, status.Phase))
 	updateConditionFunc(v1.ContainersReady, GenerateContainersReadyCondition(&pod.Spec, status.ContainerStatuses, status.Phase))
-	m.updateStatusInternal(pod, status, false)
+	m.updateStatusInternal(pod, status, true)
 }
 
 func (m *manager) SetContainerStartup(podUID types.UID, containerID kubecontainer.ContainerID, started bool) {
@@ -305,7 +305,7 @@ func (m *manager) SetContainerStartup(podUID types.UID, containerID kubecontaine
 	containerStatus, _, _ = findContainerStatus(&status, containerID.String())
 	containerStatus.Started = &started
 
-	m.updateStatusInternal(pod, status, false)
+	m.updateStatusInternal(pod, status, true)
 }
 
 func findContainerStatus(status *v1.PodStatus, containerID string) (containerStatus *v1.ContainerStatus, init bool, ok bool) {
@@ -551,6 +551,8 @@ func (m *manager) updateStatusInternal(pod *v1.Pod, status v1.PodStatus, forceUp
 			"podUID", pod.UID,
 			"statusVersion", newStatus.version,
 			"status", newStatus.status)
+		klog.V(5).Infof("BREAKDOWN: %s - added item to podStatusChannel", pod.Name)
+
 		return true
 	default:
 		// Let the periodic syncBatch handle the update if the channel is full.
@@ -645,6 +647,8 @@ func (m *manager) syncBatch() {
 
 // syncPod syncs the given status with the API server. The caller must not hold the lock.
 func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {
+	klog.V(5).Infof("BREAKDOWN: %s - syncing pod - enter", status.podName)
+
 	if !m.needsUpdate(uid, status) {
 		klog.V(1).InfoS("Status for pod is up-to-date; skipping", "podUID", uid)
 		return
@@ -667,6 +671,7 @@ func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {
 			"err", err)
 		return
 	}
+	klog.V(5).Infof("BREAKDOWN: %s - syncing pod - got pod from API", status.podName)
 
 	translatedUID := m.podManager.TranslatePodUID(pod.UID)
 	// Type convert original uid just for the purpose of comparison.
@@ -681,8 +686,10 @@ func (m *manager) syncPod(uid types.UID, status versionedPodStatus) {
 
 	mergedStatus := mergePodStatus(pod.Status, status.status, m.podDeletionSafety.PodCouldHaveRunningContainers(pod))
 
+	klog.V(5).Infof("BREAKDOWN: %s - syncing pod - patch begin", status.podName)
 	newPod, patchBytes, unchanged, err := statusutil.PatchPodStatus(m.kubeClient, pod.Namespace, pod.Name, pod.UID, pod.Status, mergedStatus)
 	klog.V(3).InfoS("Patch status for pod", "pod", klog.KObj(pod), "patch", string(patchBytes))
+	klog.V(5).Infof("BREAKDOWN: %s - syncing pod - patch ends", status.podName)
 
 	if err != nil {
 		klog.InfoS("Failed to update status for pod", "pod", klog.KObj(pod), "err", err)
