@@ -24,6 +24,7 @@ package nodelifecycle
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"sync"
 	"time"
 

@@ -19,6 +19,7 @@ package storageversiongc
 import (
 	"context"
 	"fmt"
+	"k8s.io/kubernetes/pkg"
 	"time"
 
 	apiserverinternalv1alpha1 "k8s.io/api/apiserverinternal/v1alpha1"
