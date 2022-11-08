@@ -435,6 +435,10 @@ func (rsc *ReplicaSetController) updatePod(old, cur interface{}) {
 		}
 	}
 
+	if !podutil.IsPodReady(oldPod) && podutil.IsPodReady(curPod) {
+		klog.V(5).Infof("BREAKDOWN: Pod %s has been declared as ready.", curPod.Name)
+	}
+
 	// If it has a ControllerRef, that's all that matters.
 	if curControllerRef != nil {
 		rs := rsc.resolveControllerRef(curPod.Namespace, curControllerRef)
