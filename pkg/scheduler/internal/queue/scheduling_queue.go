@@ -930,7 +930,7 @@ func MakeNextPodFunc(queue SchedulingQueue) func() *framework.QueuedPodInfo {
 	return func() *framework.QueuedPodInfo {
 		podInfo, err := queue.Pop()
 		if err == nil {
-			klog.V(4).InfoS("About to try and schedule pod", "pod", klog.KObj(podInfo.Pod))
+			klog.V(1).InfoS("About to try and schedule pod", "pod", klog.KObj(podInfo.Pod))
 			return podInfo
 		}
 		klog.ErrorS(err, "Error while retrieving next pod from scheduling queue")

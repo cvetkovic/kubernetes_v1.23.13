@@ -619,7 +619,7 @@ func (sched *Scheduler) scheduleOne(ctx context.Context) {
 			sched.recordSchedulingFailure(fwk, assumedPodInfo, fmt.Errorf("binding rejected: %w", err), SchedulerError, clearNominatedNode)
 		} else {
 			// Calculating nodeResourceString can be heavy. Avoid it if klog verbosity is below 2.
-			if klog.V(2).Enabled() {
+			if klog.V(1).Enabled() {
 				klog.InfoS("Successfully bound pod to node", "pod", klog.KObj(pod), "node", scheduleResult.SuggestedHost, "evaluatedNodes", scheduleResult.EvaluatedNodes, "feasibleNodes", scheduleResult.FeasibleNodes)
 			}
 			metrics.PodScheduled(fwk.ProfileName(), metrics.SinceInSeconds(start))
