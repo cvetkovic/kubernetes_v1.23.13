@@ -92,6 +92,8 @@ func (m *kubeGenericRuntimeManager) recordContainerEvent(pod *v1.Pod, container 
 	if containerID != "" {
 		eventMessage = strings.Replace(eventMessage, containerID, container.Name, -1)
 	}
+
+	klog.V(1).Info(eventMessage)
 	m.recorder.Event(ref, eventType, reason, eventMessage)
 }
 
