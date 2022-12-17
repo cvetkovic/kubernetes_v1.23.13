@@ -93,7 +93,7 @@ func (m *kubeGenericRuntimeManager) recordContainerEvent(pod *v1.Pod, container 
 		eventMessage = strings.Replace(eventMessage, containerID, container.Name, -1)
 	}
 
-	klog.V(1).Info(eventMessage)
+	klog.V(1).Info(fmt.Sprintf("object=\"%s\" message=\"%s\"", pod.Name, eventMessage))
 	m.recorder.Event(ref, eventType, reason, eventMessage)
 }
 
